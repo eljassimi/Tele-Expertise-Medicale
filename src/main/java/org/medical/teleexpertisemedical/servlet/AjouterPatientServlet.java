@@ -32,7 +32,7 @@ public class AjouterPatientServlet extends HttpServlet {
 
         HttpSession session = req.getSession();
         session.setAttribute("csrfToken", UUID.randomUUID().toString());
-        req.getRequestDispatcher("/WEB-INF/views/infirmier/accueil-patient.jsp").forward(req, resp);
+        req.getRequestDispatcher("/infirmier/accueil-patient.jsp").forward(req, resp);
     }
 
     @Override
@@ -123,19 +123,19 @@ public class AjouterPatientServlet extends HttpServlet {
 
             // Redirection avec message de succès
             session.setAttribute("success", "Patient enregistré avec succès et ajouté à la file d'attente");
-            resp.sendRedirect(req.getContextPath() + "/infirmier/dashboard-infirmier");
+            resp.sendRedirect(req.getContextPath() + "/infirmier/dashboard-infirmier.jsp");
 
         } catch (NumberFormatException e) {
             if (tx.isActive()) tx.rollback();
             e.printStackTrace();
             req.setAttribute("error", "Erreur de format dans les données saisies : " + e.getMessage());
-            req.getRequestDispatcher("/WEB-INF/views/infirmier/accueil-patient.jsp").forward(req, resp);
+            req.getRequestDispatcher("/infirmier/accueil-patient.jsp").forward(req, resp);
 
         } catch (Exception e) {
             if (tx.isActive()) tx.rollback();
             e.printStackTrace();
             req.setAttribute("error", "Erreur lors de l'enregistrement du patient : " + e.getMessage());
-            req.getRequestDispatcher("/WEB-INF/views/infirmier/accueil-patient.jsp").forward(req, resp);
+            req.getRequestDispatcher("/infirmier/accueil-patient.jsp").forward(req, resp);
 
         } finally {
             em.close();
