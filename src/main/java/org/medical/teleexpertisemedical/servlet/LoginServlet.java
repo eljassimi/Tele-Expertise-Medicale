@@ -102,7 +102,7 @@ public class LoginServlet extends HttpServlet {
                 resp.sendRedirect(contextPath + "/dashboard-specialiste.jsp");
                 break;
             case "INFIRMIER":
-                resp.sendRedirect(contextPath + "/dashboard-infirmier.jsp");
+                resp.sendRedirect(contextPath + "/infirmier/dashboard-infirmier.jsp");
                 break;
             default:
                 resp.sendRedirect(contextPath + "/dashboard.jsp");

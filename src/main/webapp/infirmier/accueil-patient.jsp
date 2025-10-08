@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%
   if (session == null || session.getAttribute("user") == null ||
           !"INFIRMIER".equals(session.getAttribute("role"))) {
@@ -47,6 +48,21 @@
       transform: translateY(-2px);
       box-shadow: 0 8px 20px rgba(20, 108, 92, 0.3);
     }
+
+    .alert {
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
   </style>
 </head>
 <body class="bg-gray-50">
@@ -56,7 +72,7 @@
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex justify-between items-center h-16">
       <div class="flex items-center">
-        <a href="dashboard-infirmier" class="text-white hover:text-gray-200 mr-4">
+        <a href="${pageContext.request.contextPath}/infirmier/dashboard-infirmier" class="text-white hover:text-gray-200 mr-4">
           <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
           </svg>
@@ -66,7 +82,7 @@
 
       <div class="flex items-center space-x-4">
         <span class="text-white">${sessionScope.user}</span>
-        <a href="logout" class="bg-white text-teal-700 px-4 py-2 rounded-lg hover:bg-gray-100 transition font-semibold">
+        <a href="${pageContext.request.contextPath}/logout" class="bg-white text-teal-700 px-4 py-2 rounded-lg hover:bg-gray-100 transition font-semibold">
           Déconnexion
         </a>
       </div>
@@ -85,20 +101,30 @@
       Étape 1 : Rechercher le patient
     </h2>
 
-    <!-- Message d'erreur ou succès -->
+    <!-- Messages -->
     <c:if test="${not empty error}">
-      <div class="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg">
-          ${error}
+      <div class="alert mb-4 p-4 bg-red-100 border-l-4 border-red-500 text-red-700 rounded">
+        <div class="flex items-center">
+          <svg class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+          </svg>
+            ${error}
+        </div>
       </div>
     </c:if>
 
     <c:if test="${not empty success}">
-      <div class="mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded-lg">
-          ${success}
+      <div class="alert mb-4 p-4 bg-green-100 border-l-4 border-green-500 text-green-700 rounded">
+        <div class="flex items-center">
+          <svg class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+          </svg>
+            ${success}
+        </div>
       </div>
     </c:if>
 
-    <form action="infirmier/rechercher-patient" method="post" class="mb-6">
+    <form action="${pageContext.request.contextPath}/infirmier/rechercher-patient" method="post" class="mb-6">
       <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}"/>
       <div class="flex gap-4">
         <div class="flex-1">
@@ -117,6 +143,9 @@
                 type="submit"
                 class="btn-primary text-white px-6 py-3 rounded-xl font-semibold focus:outline-none"
         >
+          <svg class="inline h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
           Rechercher
         </button>
       </div>
@@ -126,15 +155,20 @@
     <c:if test="${not empty patientTrouve}">
       <div class="border-t pt-6">
         <div class="bg-green-50 border-2 border-green-200 rounded-xl p-6">
-          <h3 class="text-lg font-bold text-green-900 mb-4">Patient trouvé !</h3>
-          <div class="grid grid-cols-2 gap-4 mb-4">
+          <h3 class="text-lg font-bold text-green-900 mb-4 flex items-center">
+            <svg class="h-6 w-6 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+            </svg>
+            Patient trouvé !
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
               <p class="text-sm text-gray-600">Nom complet</p>
-              <p class="font-semibold">${patientTrouve.nom} ${patientTrouve.prenom}</p>
+              <p class="font-semibold text-lg">${patientTrouve.nom} ${patientTrouve.prenom}</p>
             </div>
             <div>
               <p class="text-sm text-gray-600">Date de naissance</p>
-              <p class="font-semibold">${patientTrouve.dateNaissance}</p>
+              <p class="font-semibold"><fmt:formatDate value="${patientTrouve.dateNaissance}" pattern="dd/MM/yyyy"/></p>
             </div>
             <div>
               <p class="text-sm text-gray-600">Téléphone</p>
@@ -149,6 +183,9 @@
                   onclick="showSignesVitauxForm()"
                   class="btn-primary text-white px-6 py-3 rounded-xl font-semibold"
           >
+            <svg class="inline h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
             Enregistrer les signes vitaux
           </button>
         </div>
@@ -159,9 +196,12 @@
     <div class="text-center mt-6">
       <button
               onclick="showNewPatientForm()"
-              class="bg-gray-100 text-gray-700 px-6 py-3 rounded-xl font-semibold hover:bg-gray-200 transition"
+              class="bg-gray-100 text-gray-700 px-6 py-3 rounded-xl font-semibold hover:bg-gray-200 transition inline-flex items-center"
       >
-        + Nouveau patient
+        <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+        </svg>
+        Nouveau patient
       </button>
     </div>
   </div>
@@ -175,7 +215,7 @@
       Étape 2 : Enregistrer un nouveau patient
     </h2>
 
-    <form action="ajouter-patient.jsp" method="post">
+    <form action="${pageContext.request.contextPath}/infirmier/ajouter-patient" method="post">
       <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}"/>
 
       <!-- Informations personnelles -->
@@ -457,6 +497,9 @@
                 type="submit"
                 class="btn-primary text-white px-6 py-3 rounded-xl font-semibold"
         >
+          <svg class="inline h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+          </svg>
           Enregistrer et ajouter à la file d'attente
         </button>
       </div>
@@ -472,7 +515,7 @@
       Étape 3 : Enregistrer les signes vitaux
     </h2>
 
-    <form action="infirmier/ajouter-signes-vitaux" method="post">
+    <form action="${pageContext.request.contextPath}/infirmier/ajouter-signes-vitaux" method="post">
       <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}"/>
       <input type="hidden" name="patientId" value="${patientTrouve.id}"/>
 
@@ -601,6 +644,9 @@
                 type="submit"
                 class="btn-primary text-white px-6 py-3 rounded-xl font-semibold"
         >
+          <svg class="inline h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+          </svg>
           Enregistrer et ajouter à la file d'attente
         </button>
       </div>
@@ -613,6 +659,7 @@
   function showNewPatientForm() {
     document.getElementById('newPatientSection').classList.add('active');
     document.getElementById('searchSection').style.display = 'none';
+    document.getElementById('signesVitauxSection').classList.remove('active');
   }
 
   function hideNewPatientForm() {
@@ -623,12 +670,23 @@
   function showSignesVitauxForm() {
     document.getElementById('signesVitauxSection').classList.add('active');
     document.getElementById('searchSection').style.display = 'none';
+    document.getElementById('newPatientSection').classList.remove('active');
   }
 
   function hideSignesVitauxForm() {
     document.getElementById('signesVitauxSection').classList.remove('active');
     document.getElementById('searchSection').style.display = 'block';
   }
+
+  // Auto-hide success/error messages after 5 seconds
+  setTimeout(function() {
+    const alerts = document.querySelectorAll('.alert');
+    alerts.forEach(alert => {
+      alert.style.transition = 'opacity 0.5s';
+      alert.style.opacity = '0';
+      setTimeout(() => alert.remove(), 500);
+    });
+  }, 5000);
 </script>
 
 </body>

@@ -122,7 +122,7 @@
 
     <!-- Actions rapides -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <a href="infirmier/accueil-patient.jsp" class="card bg-white rounded-xl p-6 shadow-lg border-2 border-transparent hover:border-teal-500">
+        <a href="accueil-patient.jsp" class="card bg-white rounded-xl p-6 shadow-lg border-2 border-transparent hover:border-teal-500">
             <div class="flex items-center">
                 <div class="bg-teal-100 rounded-lg p-3">
                     <svg class="h-8 w-8 text-teal-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
