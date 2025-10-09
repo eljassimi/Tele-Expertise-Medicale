@@ -47,6 +47,7 @@ public class PatientService {
     public Patient savePatient(Patient patient) {
         return patientDAO.save(patient);
     }
+    public List<Patient> findAll() {return patientDAO.findAll();}
 
 
     public void close() {

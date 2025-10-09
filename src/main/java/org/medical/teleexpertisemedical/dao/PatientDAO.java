@@ -60,6 +60,20 @@ public class PatientDAO {
         }
     }
 
+    public List<Patient> findAll(){
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.createQuery(
+                            "SELECT DISTINCT p FROM Patient p " +
+                                    "LEFT JOIN FETCH p.signesVitaux " +
+                                    "ORDER BY p.dateEnregistrement DESC",
+                            Patient.class)
+                    .getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
 
     public void close() {
         if (emf != null && emf.isOpen()) {
