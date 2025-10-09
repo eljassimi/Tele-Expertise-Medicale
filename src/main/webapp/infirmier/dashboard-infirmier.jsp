@@ -61,14 +61,15 @@
             </div>
 
             <div class="flex items-center space-x-4">
-                    <span class="text-white">
-                        <svg class="inline h-5 w-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                        </svg>
-                        ${sessionScope.user}
-                    </span>
-                <a href="logout" class="bg-white text-teal-700 px-4 py-2 rounded-lg hover:bg-gray-100 transition font-semibold">
+                <span class="text-white">
+                    <svg class="inline h-5 w-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    </svg>
+                    ${sessionScope.user}
+                </span>
+                <a href="${pageContext.request.contextPath}/logout"
+                   class="bg-white text-teal-700 px-4 py-2 rounded-lg hover:bg-gray-100 transition font-semibold">
                     Déconnexion
                 </a>
             </div>
@@ -122,7 +123,8 @@
 
     <!-- Actions rapides -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <a href="accueil-patient.jsp" class="card bg-white rounded-xl p-6 shadow-lg border-2 border-transparent hover:border-teal-500">
+        <a href="${pageContext.request.contextPath}/infirmier/accueil-patient"
+           class="card bg-white rounded-xl p-6 shadow-lg border-2 border-transparent hover:border-teal-500">
             <div class="flex items-center">
                 <div class="bg-teal-100 rounded-lg p-3">
                     <svg class="h-8 w-8 text-teal-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -137,7 +139,8 @@
             </div>
         </a>
 
-        <a href="infirmier/liste-patients" class="card bg-white rounded-xl p-6 shadow-lg border-2 border-transparent hover:border-teal-500">
+        <a href="${pageContext.request.contextPath}/infirmier/liste-patients"
+           class="card bg-white rounded-xl p-6 shadow-lg border-2 border-transparent hover:border-teal-500">
             <div class="flex items-center">
                 <div class="bg-blue-100 rounded-lg p-3">
                     <svg class="h-8 w-8 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -189,16 +192,16 @@
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0 h-10 w-10 bg-teal-100 rounded-full flex items-center justify-center">
-                                            <span class="text-teal-700 font-semibold">
-                                                    ${patient.prenom.substring(0,1)}${patient.nom.substring(0,1)}
-                                            </span>
+                                    <span class="text-teal-700 font-semibold">
+                                            ${patient.prenom.substring(0,1)}${patient.nom.substring(0,1)}
+                                    </span>
                                 </div>
                                 <div class="ml-4">
                                     <div class="text-sm font-medium text-gray-900">
                                             ${patient.nom} ${patient.prenom}
                                     </div>
                                     <div class="text-sm text-gray-500">
-                                        <fmt:formatDate value="${patient.dateNaissance}" pattern="dd/MM/yyyy"/>
+                                            ${patient.dateNaissance}
                                     </div>
                                 </div>
                             </div>
@@ -207,11 +210,14 @@
                                 ${patient.numeroSecuriteSociale}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            <fmt:formatDate value="${patient.dateEnregistrement}" pattern="HH:mm"/>
+                            <c:if test="${not empty patient.dateEnregistrement}">
+                                ${patient.dateEnregistrement.toLocalTime().toString().substring(0, 5)}
+                            </c:if>
                         </td>
                         <td class="px-6 py-4 text-sm text-gray-500">
                             <c:if test="${not empty patient.signesVitaux}">
-                                <c:set var="dernierSigne" value="${patient.signesVitaux[patient.signesVitaux.size()-1]}"/>
+                                <c:set var="dernierIndex" value="${patient.signesVitaux.size() - 1}"/>
+                                <c:set var="dernierSigne" value="${patient.signesVitaux[dernierIndex]}"/>
                                 <div class="space-y-1">
                                     <div>TA: ${dernierSigne.tensionArterielle}</div>
                                     <div>FC: ${dernierSigne.frequenceCardiaque} bpm</div>
@@ -222,19 +228,19 @@
                         <td class="px-6 py-4 whitespace-nowrap">
                             <c:choose>
                                 <c:when test="${patient.enAttente}">
-                                            <span class="badge-waiting px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full">
-                                                En attente
-                                            </span>
+                                    <span class="badge-waiting px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full">
+                                        En attente
+                                    </span>
                                 </c:when>
                                 <c:otherwise>
-                                            <span class="badge-done px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full">
-                                                Consulté
-                                            </span>
+                                    <span class="badge-done px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full">
+                                        Consulté
+                                    </span>
                                 </c:otherwise>
                             </c:choose>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <a href="infirmier/patient/${patient.id}"
+                            <a href="${pageContext.request.contextPath}/infirmier/patient/${patient.id}"
                                class="text-teal-600 hover:text-teal-900 mr-3">
                                 Voir détails
                             </a>

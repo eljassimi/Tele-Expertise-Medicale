@@ -37,7 +37,6 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        // Validation CSRF
         HttpSession session = req.getSession();
         String sessionToken = (String) session.getAttribute("csrfToken");
         String formToken = req.getParameter("csrfToken");
@@ -47,38 +46,32 @@ public class LoginServlet extends HttpServlet {
             return;
         }
 
-        // Récupérer les paramètres
         String username = req.getParameter("username");
         String password = req.getParameter("password");
 
         EntityManager em = emf.createEntityManager();
 
         try {
-            // Rechercher l'utilisateur par nom d'utilisateur
             User user = em.createQuery(
                             "SELECT u FROM User u WHERE u.username = :username", User.class)
                     .setParameter("username", username)
                     .getSingleResult();
 
-            // Vérifier le mot de passe avec BCrypt
             if (BCrypt.checkpw(password, user.getPassword())) {
-                // Authentification réussie
+
                 session = req.getSession(true);
                 session.setAttribute("user", user.getUsername());
                 session.setAttribute("userId", user.getId());
                 session.setAttribute("role", user.getRole());
-                session.setMaxInactiveInterval(30 * 60); // Session de 30 minutes
+                session.setMaxInactiveInterval(30 * 60);
 
-                // Redirection selon le rôle
                 redirectByRole(user.getRole(), req, resp);
             } else {
-                // Mot de passe incorrect
                 req.setAttribute("error", "Nom d'utilisateur ou mot de passe incorrect");
                 req.getRequestDispatcher("/login.jsp").forward(req, resp);
             }
 
         } catch (NoResultException e) {
-            // Utilisateur non trouvé
             req.setAttribute("error", "Nom d'utilisateur ou mot de passe incorrect");
             req.getRequestDispatcher("/login.jsp").forward(req, resp);
         } catch (Exception e) {
@@ -96,16 +89,16 @@ public class LoginServlet extends HttpServlet {
 
         switch (role) {
             case "GENERALISTE":
-                resp.sendRedirect(contextPath + "/dashboard-generaliste.jsp");
+                resp.sendRedirect(contextPath + "/generaliste/dashboard-generaliste");
                 break;
             case "SPECIALISTE":
-                resp.sendRedirect(contextPath + "/dashboard-specialiste.jsp");
+                resp.sendRedirect(contextPath + "/specialiste/dashboard-specialiste");
                 break;
             case "INFIRMIER":
-                resp.sendRedirect(contextPath + "/infirmier/dashboard-infirmier.jsp");
+                resp.sendRedirect(contextPath + "/infirmier/dashboard-infirmier");
                 break;
             default:
-                resp.sendRedirect(contextPath + "/dashboard.jsp");
+                resp.sendRedirect(contextPath + "/login");
         }
     }
 
