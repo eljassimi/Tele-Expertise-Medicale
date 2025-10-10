@@ -5,6 +5,8 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import org.medical.teleexpertisemedical.entity.Consultation;
 
+import java.util.List;
+
 public class ConsultationDAO {
     private EntityManagerFactory emf;
 
@@ -40,4 +42,20 @@ public class ConsultationDAO {
             emf.close();
         }
     }
+
+    public List<Consultation> findAll() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.createQuery(
+                            "SELECT DISTINCT c FROM Consultation c " +
+                                    "LEFT JOIN FETCH c.patient " +
+                                    "LEFT JOIN FETCH c.medecinGeneraliste " +
+                                    "ORDER BY c.dateConsultation DESC",
+                            Consultation.class)
+                    .getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
 }

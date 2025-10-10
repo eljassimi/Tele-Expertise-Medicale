@@ -3,6 +3,8 @@ package org.medical.teleexpertisemedical.service;
 import org.medical.teleexpertisemedical.dao.ConsultationDAO;
 import org.medical.teleexpertisemedical.entity.Consultation;
 
+import java.util.List;
+
 public class ConsultationService {
     private ConsultationDAO consultationDAO;
 
@@ -18,5 +20,9 @@ public class ConsultationService {
         if (consultationDAO != null) {
             consultationDAO.close();
         }
+    }
+
+    public List<Consultation> findAll() {
+        return consultationDAO.findAll();
     }
 }
