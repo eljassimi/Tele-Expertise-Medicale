@@ -74,6 +74,42 @@ public class PatientDAO {
         }
     }
 
+    public Patient findByNumeroSecuriteSociale(String numero) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.createQuery(
+                            "SELECT p FROM Patient p WHERE p.numeroSecuriteSociale = :numero",
+                            Patient.class)
+                    .setParameter("numero", numero)
+                    .getSingleResult();
+        } catch (Exception e) {
+            return null;
+        } finally {
+            em.close();
+        }
+    }
+
+    public Patient findPatientById(Long id){
+        EntityManager em = emf.createEntityManager();
+        try{
+            return em.createQuery("SELECT p FROM Patient p JOIN FETCH p.signesVitaux WHERE p.id = :id",Patient.class)
+                    .setParameter("id",id)
+                        .getSingleResult();
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }finally {
+            em.close();
+        }
+    }
+
+    public Patient update(Patient patient) {
+        if (patient.getId() == null) {
+            throw new IllegalArgumentException("Impossible de mettre à jour un patient sans ID");
+        }
+        return save(patient);
+    }
+
 
     public void close() {
         if (emf != null && emf.isOpen()) {

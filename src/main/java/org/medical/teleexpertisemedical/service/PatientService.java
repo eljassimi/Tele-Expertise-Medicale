@@ -49,6 +49,15 @@ public class PatientService {
     }
     public List<Patient> findAll() {return patientDAO.findAll();}
 
+    public Patient findPatientByNumeroSS(String numero) {
+        return patientDAO.findByNumeroSecuriteSociale(numero);
+    }
+
+    public Patient findPatientById(Long id){
+        return patientDAO.findPatientById(id);
+    }
+
+    public Patient updatePatient(Patient patient) { return patientDAO.update(patient);}
 
     public void close() {
         if (patientDAO != null) {

@@ -168,7 +168,7 @@
             </div>
             <div>
               <p class="text-sm text-gray-600">Date de naissance</p>
-              <p class="font-semibold"><fmt:formatDate value="${patientTrouve.dateNaissance}" pattern="dd/MM/yyyy"/></p>
+              <p class="font-semibold">${patientTrouve.dateNaissance}</p>
             </div>
             <div>
               <p class="text-sm text-gray-600">Téléphone</p>
