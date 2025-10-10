@@ -54,6 +54,17 @@ public class Patient {
     @Column(name = "en_attente")
     private Boolean enAttente = false;
 
+    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
+    private List<Consultation> consultations = new ArrayList<>();
+
+    public List<Consultation> getConsultations() {
+        return consultations;
+    }
+
+    public void setConsultations(List<Consultation> consultations) {
+        this.consultations = consultations;
+    }
+
     @PrePersist
     protected void onCreate() {
         dateEnregistrement = LocalDateTime.now();
