@@ -25,4 +25,8 @@ public class ConsultationService {
     public List<Consultation> findAll() {
         return consultationDAO.findAll();
     }
+
+    public Consultation findByPatientId(Long patientId) {
+        return consultationDAO.findByPatientId(patientId);
+    }
 }

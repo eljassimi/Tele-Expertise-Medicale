@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import org.medical.teleexpertisemedical.entity.Consultation;
+import org.medical.teleexpertisemedical.entity.StatutConsultation;
 
 import java.util.List;
 
@@ -58,4 +59,22 @@ public class ConsultationDAO {
         }
     }
 
+    public Consultation findByPatientId(Long patientId) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.createQuery(
+                            "SELECT c FROM Consultation c " +
+                                    "LEFT JOIN FETCH c.patient " +
+                                    "LEFT JOIN FETCH c.medecinGeneraliste " +
+                                    "WHERE c.patient.id = :patientId AND c.statut = :statut",
+                            Consultation.class)
+                    .setParameter("patientId", patientId)
+                    .setParameter("statut", StatutConsultation.EN_COURS)
+                    .getSingleResult();
+        } catch (Exception e) {
+            return null;
+        } finally {
+            em.close();
+        }
+    }
 }
