@@ -114,7 +114,7 @@ public class ConsultationGeneralisteServlet extends HttpServlet {
                 if (diagnostic == null || diagnostic.trim().isEmpty() ||
                         traitement == null || traitement.trim().isEmpty()) {
                     session.setAttribute("error",
-                            "Le diagnostic et le traitement sont obligatoires pour clôturer la consultation");
+                            "Le diagnostic et le traitement sont obligatoires pour cloturer la consultation");
                     resp.sendRedirect(req.getContextPath() + "/generaliste/consultation?patientId=" + patientId);
                     return;
                 }
@@ -125,25 +125,22 @@ public class ConsultationGeneralisteServlet extends HttpServlet {
                 patientService.updatePatient(patient);
 
                 session.setAttribute("success",
-                        "Consultation clôturée avec succès pour " +
+                        "Consultation cloturee avec succes pour " +
                                 patient.getNom() + " " + patient.getPrenom());
 
                 resp.sendRedirect(req.getContextPath() + "/generaliste/dashboard-generaliste");
             }
             else if ("demander_avis".equals(action)) {
-                // Sauvegarder avec statut EN_ATTENTE_AVIS_SPECIALISTE
-                consultation.setStatut(StatutConsultation.EN_ATTENTE_AVIS_SPECIALISTE);
                 consultationService.save(consultation);
 
-                // Stocker l'ID de la consultation en session
                 session.setAttribute("consultationId", consultation.getId());
                 session.setAttribute("info",
-                        "Consultation enregistrée. Veuillez sélectionner un spécialiste.");
+                        "Consultation enregistree");
 
-                // Rediriger vers la page de demande d'expertise (US3)
                 resp.sendRedirect(req.getContextPath() +
                         "/generaliste/demander-expertise?consultationId=" + consultation.getId());
             }
+
             else {
                 session.setAttribute("error", "Action non reconnue");
                 resp.sendRedirect(req.getContextPath() + "/generaliste/dashboard-generaliste");
@@ -151,7 +148,7 @@ public class ConsultationGeneralisteServlet extends HttpServlet {
 
         } catch (Exception e) {
             e.printStackTrace();
-            session.setAttribute("error", "Erreur lors de l'enregistrement : " + e.getMessage());
+            session.setAttribute("error", "Erreur lors de l enregistrement : " + e.getMessage());
             resp.sendRedirect(req.getContextPath() + "/generaliste/dashboard-generaliste");
         }
     }
