@@ -1,4 +1,4 @@
-package org.medical.teleexpertisemedical.service;
+package org.medical.teleexpertisemedical.dao;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -7,10 +7,10 @@ import org.medical.teleexpertisemedical.entity.Specialite;
 
 import java.util.List;
 
-public class SpecialiteService {
+public class SpecialiteDAO {
     private final EntityManagerFactory emf;
 
-    public SpecialiteService() {
+    public SpecialiteDAO() {
         this.emf = Persistence.createEntityManagerFactory("teleExpertisePU");
     }
 
