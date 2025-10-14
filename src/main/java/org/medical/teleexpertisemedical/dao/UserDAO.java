@@ -74,9 +74,6 @@ public class UserDAO {
         }
     }
 
-    /**
-     * Trouve tous les utilisateurs
-     */
     public List<User> findAll() {
         EntityManager em = emf.createEntityManager();
         try {
@@ -89,9 +86,6 @@ public class UserDAO {
         }
     }
 
-    /**
-     * Sauvegarde ou met à jour un utilisateur
-     */
     public User save(User user) {
         EntityManager em = emf.createEntityManager();
         try {
@@ -115,9 +109,6 @@ public class UserDAO {
         }
     }
 
-    /**
-     * Supprime un utilisateur par ID
-     */
     public void delete(Long id) {
         EntityManager em = emf.createEntityManager();
         try {
@@ -139,59 +130,6 @@ public class UserDAO {
         }
     }
 
-    /**
-     * Vérifie si un username existe déjà
-     */
-    public boolean usernameExists(String username) {
-        EntityManager em = emf.createEntityManager();
-        try {
-            Long count = em.createQuery(
-                            "SELECT COUNT(u) FROM User u WHERE u.username = :username",
-                            Long.class)
-                    .setParameter("username", username)
-                    .getSingleResult();
-            return count > 0;
-        } finally {
-            em.close();
-        }
-    }
-
-    /**
-     * Vérifie si un email existe déjà
-     */
-    public boolean emailExists(String email) {
-        EntityManager em = emf.createEntityManager();
-        try {
-            Long count = em.createQuery(
-                            "SELECT COUNT(u) FROM User u WHERE u.email = :email",
-                            Long.class)
-                    .setParameter("email", email)
-                    .getSingleResult();
-            return count > 0;
-        } finally {
-            em.close();
-        }
-    }
-
-    /**
-     * Compte le nombre d'utilisateurs par rôle
-     */
-    public long countByRole(String role) {
-        EntityManager em = emf.createEntityManager();
-        try {
-            return em.createQuery(
-                            "SELECT COUNT(u) FROM User u WHERE u.role = :role",
-                            Long.class)
-                    .setParameter("role", role)
-                    .getSingleResult();
-        } finally {
-            em.close();
-        }
-    }
-
-    /**
-     * Ferme l'EntityManagerFactory
-     */
     public void close() {
         if (emf != null && emf.isOpen()) {
             emf.close();
