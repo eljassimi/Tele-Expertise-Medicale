@@ -7,19 +7,28 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.medical.teleexpertisemedical.entity.Consultation;
+import org.medical.teleexpertisemedical.entity.DemandeExpertise;
+import org.medical.teleexpertisemedical.entity.User;
 import org.medical.teleexpertisemedical.service.ConsultationService;
+import org.medical.teleexpertisemedical.service.DemandeExpertiseService;
+import org.medical.teleexpertisemedical.service.UserService;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @WebServlet("/generaliste/dashboard-generaliste")
 public class DashboardGeneralisteServlet extends HttpServlet {
     private ConsultationService consultationService;
+    private DemandeExpertiseService demandeExpertiseService;
+    private UserService userService;
 
     @Override
     public void init() {
         consultationService = new ConsultationService();
+        demandeExpertiseService = new DemandeExpertiseService();
+        userService = new UserService();
     }
 
     @Override
@@ -34,39 +43,91 @@ public class DashboardGeneralisteServlet extends HttpServlet {
         }
 
         try {
-            List<Consultation> consultations = consultationService.findAll();
+            String username = (String) session.getAttribute("user");
+            User generaliste = userService.findByUsername(username);
 
-            long consultationsEnCours = consultations.stream()
-                    .filter(c -> "EN_COURS".equals(c.getStatut().name()))
-                    .count();
+            if (generaliste == null) {
+                session.setAttribute("error", "Utilisateur introuvable");
+                resp.sendRedirect(req.getContextPath() + "/login");
+                return;
+            }
 
-            long consultationsTerminees = consultations.stream()
-                    .filter(c -> "TERMINEE".equals(c.getStatut().name()))
-                    .count();
+            // Get all consultations for this generaliste
+            List<Consultation> allConsultations = consultationService.findByGeneralisteId(generaliste.getId());
 
-            List<Consultation> consultationsEnCoursListe = consultations.stream()
-                    .filter(c -> "EN_COURS".equals(c.getStatut().name()))
+            // Force load related entities
+            for (Consultation consultation : allConsultations) {
+                if (consultation.getPatient() != null) {
+                    consultation.getPatient().getNom();
+                    consultation.getPatient().getPrenom();
+                    consultation.getPatient().getDateNaissance();
+                }
+            }
+
+            // Filter consultations en cours (not terminated)
+            List<Consultation> consultationsEnCours = allConsultations.stream()
+                    .filter(c -> c.getDateConsultation() != null)
                     .collect(Collectors.toList());
 
-            req.setAttribute("consultations", consultationsEnCoursListe);
-            req.setAttribute("consultationsEnCours", consultationsEnCours);
-            req.setAttribute("consultationsTerminees", consultationsTerminees);
-            req.setAttribute("totalConsultations", consultations.size());
+            // Statistics
+            int totalConsultations = allConsultations.size();
+            int enCours = consultationsEnCours.size();
+            int terminees = totalConsultations - enCours;
+
+            // Get all demandes d'expertise for this generaliste
+            List<DemandeExpertise> allDemandes = new ArrayList<>();
+            for (Consultation consultation : allConsultations) {
+                List<DemandeExpertise> demandes = demandeExpertiseService.findByConsultationId(consultation.getId());
+                if (demandes != null && !demandes.isEmpty()) {
+                    allDemandes.addAll(demandes);
+                }
+            }
+
+            // Force load expertise related data
+            for (DemandeExpertise demande : allDemandes) {
+                if (demande.getSpecialiste() != null) {
+                    demande.getSpecialiste().getNom();
+                    demande.getSpecialiste().getPrenom();
+                    if (demande.getSpecialiste().getSpecialite() != null) {
+                        demande.getSpecialiste().getSpecialite().getNom();
+                    }
+                }
+                if (demande.getConsultation() != null && demande.getConsultation().getPatient() != null) {
+                    demande.getConsultation().getPatient().getId();
+                }
+            }
+
+            // Filter demandes
+            List<DemandeExpertise> demandesEnAttente = allDemandes.stream()
+                    .filter(d -> "EN_ATTENTE".equals(d.getStatut()))
+                    .collect(Collectors.toList());
+
+            List<DemandeExpertise> reponses = allDemandes.stream()
+                    .filter(d -> "TERMINEE".equals(d.getStatut()))
+                    .sorted((d1, d2) -> d2.getDateReponse().compareTo(d1.getDateReponse())) // Most recent first
+                    .collect(Collectors.toList());
+
+            req.setAttribute("consultations", consultationsEnCours);
+            req.setAttribute("totalConsultations", totalConsultations);
+            req.setAttribute("consultationsEnCours", enCours);
+            req.setAttribute("consultationsTerminees", terminees);
+            req.setAttribute("demandesEnAttente", demandesEnAttente);
+            req.setAttribute("reponses", reponses);
+            req.setAttribute("totalDemandes", allDemandes.size());
 
             req.getRequestDispatcher("/generaliste/dashboard-generaliste.jsp")
                     .forward(req, resp);
 
         } catch (Exception e) {
             e.printStackTrace();
-            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Erreur lors du chargement du dashboard : " + e.getMessage());
+            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Erreur : " + e.getMessage());
         }
     }
 
     @Override
     public void destroy() {
-        if (consultationService != null) {
-            consultationService.close();
-        }
+        if (consultationService != null) consultationService.close();
+        if (demandeExpertiseService != null) demandeExpertiseService.close();
+        if (userService != null) userService.close();
     }
 }
