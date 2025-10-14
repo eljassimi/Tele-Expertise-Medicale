@@ -22,11 +22,19 @@ public class ConsultationService {
         }
     }
 
+    public Consultation findById(Long id){
+        return consultationDAO.findById(id);
+    }
+
     public List<Consultation> findAll() {
         return consultationDAO.findAll();
     }
 
     public Consultation findByPatientId(Long patientId) {
         return consultationDAO.findByPatientId(patientId);
+    }
+
+    public List<Consultation> findByGeneralisteId(Long id) {
+        return consultationDAO.findByGeneralisteId(id);
     }
 }
