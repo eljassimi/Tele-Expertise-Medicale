@@ -77,7 +77,7 @@ public class CreneauService {
         try {
             em.getTransaction().begin();
 
-            LocalDate startDate = LocalDate.now().plusDays(1);
+            LocalDate startDate = LocalDate.now();
             int creneauxCount = 0;
 
             for (int day = 0; day < 7; day++) {
@@ -89,13 +89,7 @@ public class CreneauService {
                         LocalTime.of(10, 0),
                         LocalTime.of(10, 30),
                         LocalTime.of(11, 0),
-                        LocalTime.of(11, 30),
-                        LocalTime.of(14, 0),
-                        LocalTime.of(14, 30),
-                        LocalTime.of(15, 0),
-                        LocalTime.of(15, 30),
-                        LocalTime.of(16, 0),
-                        LocalTime.of(16, 30)
+                        LocalTime.of(11, 30)
                 };
 
                 for (LocalTime time : timeSlots) {
