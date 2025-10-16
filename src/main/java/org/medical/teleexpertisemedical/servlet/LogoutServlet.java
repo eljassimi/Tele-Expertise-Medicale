@@ -16,13 +16,11 @@ public class LogoutServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        // Récupérer et invalider la session
         HttpSession session = req.getSession(false);
         if (session != null) {
             session.invalidate();
         }
 
-        // Rediriger vers la page de login
         resp.sendRedirect(req.getContextPath() + "/login");
     }
 
