@@ -52,29 +52,17 @@ public class DashboardGeneralisteServlet extends HttpServlet {
                 return;
             }
 
-            // Get all consultations for this generaliste
             List<Consultation> allConsultations = consultationService.findByGeneralisteId(generaliste.getId());
 
-            // Force load related entities
-            for (Consultation consultation : allConsultations) {
-                if (consultation.getPatient() != null) {
-                    consultation.getPatient().getNom();
-                    consultation.getPatient().getPrenom();
-                    consultation.getPatient().getDateNaissance();
-                }
-            }
 
-            // Filter consultations en cours (not terminated)
             List<Consultation> consultationsEnCours = allConsultations.stream()
                     .filter(c -> c.getDateConsultation() != null)
                     .collect(Collectors.toList());
 
-            // Statistics
             int totalConsultations = allConsultations.size();
             int enCours = consultationsEnCours.size();
             int terminees = totalConsultations - enCours;
 
-            // Get all demandes d'expertise for this generaliste
             List<DemandeExpertise> allDemandes = new ArrayList<>();
             for (Consultation consultation : allConsultations) {
                 List<DemandeExpertise> demandes = demandeExpertiseService.findByConsultationId(consultation.getId());
