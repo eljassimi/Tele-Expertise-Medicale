@@ -1,9 +1,5 @@
 package org.medical.teleexpertisemedical.servlet;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.NoResultException;
-import jakarta.persistence.Persistence;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -12,17 +8,18 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.mindrot.jbcrypt.BCrypt;
 import org.medical.teleexpertisemedical.entity.User;
+import org.medical.teleexpertisemedical.service.UserService;
 
 import java.io.IOException;
 import java.util.UUID;
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
-    private EntityManagerFactory emf;
+    private UserService userService;
 
     @Override
     public void init() {
-        emf = Persistence.createEntityManagerFactory("teleExpertisePU");
+        userService = new UserService();
     }
 
     @Override
@@ -49,16 +46,10 @@ public class LoginServlet extends HttpServlet {
         String username = req.getParameter("username");
         String password = req.getParameter("password");
 
-        EntityManager em = emf.createEntityManager();
-
         try {
-            User user = em.createQuery(
-                            "SELECT u FROM User u WHERE u.username = :username", User.class)
-                    .setParameter("username", username)
-                    .getSingleResult();
+            User user = userService.findByUsername(username);
 
-            if (BCrypt.checkpw(password, user.getPassword())) {
-
+            if (user != null && BCrypt.checkpw(password, user.getPassword())) {
                 session = req.getSession(true);
                 session.setAttribute("user", user.getUsername());
                 session.setAttribute("userId", user.getId());
@@ -71,15 +62,10 @@ public class LoginServlet extends HttpServlet {
                 req.getRequestDispatcher("/login.jsp").forward(req, resp);
             }
 
-        } catch (NoResultException e) {
-            req.setAttribute("error", "Nom d'utilisateur ou mot de passe incorrect");
-            req.getRequestDispatcher("/login.jsp").forward(req, resp);
         } catch (Exception e) {
             e.printStackTrace();
             req.setAttribute("error", "Erreur lors de la connexion");
             req.getRequestDispatcher("/login.jsp").forward(req, resp);
-        } finally {
-            em.close();
         }
     }
 
@@ -104,6 +90,6 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     public void destroy() {
-        if (emf != null) emf.close();
+        if (userService != null) userService.close();
     }
 }
