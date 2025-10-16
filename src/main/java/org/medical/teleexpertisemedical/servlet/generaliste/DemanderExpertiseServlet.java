@@ -59,35 +59,21 @@ public class DemanderExpertiseServlet extends HttpServlet {
                 return;
             }
 
-            // Force load patient data
-            if (consultation.getPatient() != null) {
-                consultation.getPatient().getNom();
-                consultation.getPatient().getPrenom();
-            }
 
-            // Récupérer toutes les spécialités
             List<Specialite> specialites = specialiteService.findAll();
             req.setAttribute("specialites", specialites);
             req.setAttribute("consultation", consultation);
 
-            System.out.println("=== DEBUG INFO ===");
-            System.out.println("Consultation ID: " + consultationId);
-
-            // Si une spécialité est sélectionnée
             String specialiteIdParam = req.getParameter("specialiteId");
             if (specialiteIdParam != null && !specialiteIdParam.isEmpty()) {
                 Long specialiteId = Long.parseLong(specialiteIdParam);
                 System.out.println("Specialite ID selected: " + specialiteId);
 
-                // US3 : Utilisation Stream API
                 List<User> specialistes = specialisteService.findAll()
                         .stream()
                         .filter(s -> s.getSpecialite() != null &&
                                 s.getSpecialite().getId().equals(specialiteId))
                         .filter(s -> s.getDisponible() != null && s.getDisponible())
-                        .sorted((s1, s2) -> Double.compare(
-                                s1.getTarif() != null ? s1.getTarif() : 0.0,
-                                s2.getTarif() != null ? s2.getTarif() : 0.0))
                         .collect(Collectors.toList());
 
                 System.out.println("Specialistes found: " + specialistes.size());
@@ -95,7 +81,6 @@ public class DemanderExpertiseServlet extends HttpServlet {
                 req.setAttribute("specialiteSelectionnee", specialiteId);
             }
 
-            // Si un spécialiste est sélectionné
             String specialisteIdParam = req.getParameter("specialisteId");
             if (specialisteIdParam != null && !specialisteIdParam.isEmpty()) {
                 Long specialisteId = Long.parseLong(specialisteIdParam);
@@ -106,11 +91,9 @@ public class DemanderExpertiseServlet extends HttpServlet {
                 if (specialiste != null) {
                     System.out.println("Specialiste found: " + specialiste.getNom() + " " + specialiste.getPrenom());
 
-                    // Récupérer les créneaux
                     List<Creneau> allCreneaux = creneauService.findBySpecialisteId(specialisteId);
                     System.out.println("Total creneaux in DB: " + allCreneaux.size());
 
-                    // Filtrer les créneaux disponibles et futurs
                     List<Creneau> creneaux = allCreneaux.stream()
                             .filter(c -> {
                                 boolean isFuture = c.getDateHeure().isAfter(LocalDateTime.now());
@@ -126,7 +109,6 @@ public class DemanderExpertiseServlet extends HttpServlet {
                     req.setAttribute("creneaux", creneaux);
                     req.setAttribute("specialisteSelectionne", specialiste);
 
-                    // If no creneaux, add info message
                     if (creneaux.isEmpty()) {
                         session.setAttribute("info",
                                 "Aucun créneau disponible pour ce spécialiste. Veuillez en créer ou choisir un autre spécialiste.");
@@ -135,8 +117,6 @@ public class DemanderExpertiseServlet extends HttpServlet {
                     System.out.println("Specialiste NOT found!");
                 }
             }
-
-            System.out.println("=== END DEBUG ===");
 
             req.getRequestDispatcher("/generaliste/demander-expertise.jsp")
                     .forward(req, resp);
@@ -169,7 +149,6 @@ public class DemanderExpertiseServlet extends HttpServlet {
             String donneesAnalyses = req.getParameter("donneesAnalyses");
             String priorite = req.getParameter("priorite");
 
-            // Validation
             if (question == null || question.trim().isEmpty()) {
                 session.setAttribute("error", "La question au specialiste est obligatoire");
                 resp.sendRedirect(req.getContextPath() +
