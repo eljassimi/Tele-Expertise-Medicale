@@ -1,6 +1,7 @@
 package org.medical.teleexpertisemedical.entity;
 
 import jakarta.persistence.*;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -55,14 +56,19 @@ public class Patient {
     private Boolean enAttente = false;
 
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
-    private List<Consultation> consultations = new ArrayList<>();
+    private final List<Consultation> consultations = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "medecin_generaliste_affecte_id")
+    private User medecinGeneralisteAffecte;
 
     public List<Consultation> getConsultations() {
         return consultations;
     }
 
-    public void setConsultations(List<Consultation> consultations) {
-        this.consultations = consultations;
+
+    public void setMedecinGeneralisteAffecte(User medecinGeneralisteAffecte) {
+        this.medecinGeneralisteAffecte = medecinGeneralisteAffecte;
     }
 
     @PrePersist
@@ -70,7 +76,8 @@ public class Patient {
         dateEnregistrement = LocalDateTime.now();
     }
 
-    public Patient() {}
+    public Patient() {
+    }
 
     public Patient(String nom, String prenom, LocalDate dateNaissance, String numeroSecuriteSociale) {
         this.nom = nom;

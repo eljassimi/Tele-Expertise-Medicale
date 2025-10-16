@@ -16,8 +16,8 @@ import org.medical.teleexpertisemedical.service.UserService;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet("/infirmier/creer-consultation")
-public class CreerConsultationInfirmierServlet extends HttpServlet {
+@WebServlet("/infirmier/affecter-patient")
+public class AffecterPatientServlet extends HttpServlet {
     private PatientService patientService;
     private UserService userService;
     private ConsultationService consultationService;
@@ -44,7 +44,7 @@ public class CreerConsultationInfirmierServlet extends HttpServlet {
             String patientIdParam = req.getParameter("patientId");
             if (patientIdParam == null || patientIdParam.isEmpty()) {
                 session.setAttribute("error", "ID du patient manquant");
-                resp.sendRedirect(req.getContextPath() + "/infirmier/liste-patients");
+                resp.sendRedirect(req.getContextPath() + "/infirmier/dashboard-infirmier");
                 return;
             }
 
@@ -53,7 +53,7 @@ public class CreerConsultationInfirmierServlet extends HttpServlet {
 
             if (patient == null) {
                 session.setAttribute("error", "Patient introuvable");
-                resp.sendRedirect(req.getContextPath() + "/infirmier/liste-patients");
+                resp.sendRedirect(req.getContextPath() + "/infirmier/dashboard-infirmier");
                 return;
             }
 
@@ -62,21 +62,18 @@ public class CreerConsultationInfirmierServlet extends HttpServlet {
             req.setAttribute("patient", patient);
             req.setAttribute("generalistes", generalistes);
 
-            req.getRequestDispatcher("/infirmier/creer-consultation.jsp")
+            req.getRequestDispatcher("/infirmier/affecter-patient.jsp")
                     .forward(req, resp);
 
         } catch (NumberFormatException e) {
-            session = req.getSession();
             session.setAttribute("error", "ID du patient invalide");
-            resp.sendRedirect(req.getContextPath() + "/infirmier/liste-patients");
-
+            resp.sendRedirect(req.getContextPath() + "/infirmier/dashboard-infirmier");
         } catch (Exception e) {
             e.printStackTrace();
-            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Erreur lors du chargement : " + e.getMessage());
+            session.setAttribute("error", "Erreur : " + e.getMessage());
+            resp.sendRedirect(req.getContextPath() + "/infirmier/dashboard-infirmier");
         }
     }
-
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
@@ -95,30 +92,32 @@ public class CreerConsultationInfirmierServlet extends HttpServlet {
 
             if (patientIdParam == null || patientIdParam.isEmpty() ||
                     generalisteIdParam == null || generalisteIdParam.isEmpty()) {
-                session.setAttribute("error", "Paramètres manquants pour créer la consultation");
-                resp.sendRedirect(req.getContextPath() + "/infirmier/liste-patients");
+                session.setAttribute("error", "Paramètres manquants");
+                resp.sendRedirect(req.getContextPath() + "/infirmier/dashboard-infirmier");
                 return;
             }
 
             Long patientId = Long.parseLong(patientIdParam);
             Long generalisteId = Long.parseLong(generalisteIdParam);
 
-
             Patient patient = patientService.findPatientById(patientId);
             User generaliste = userService.findById(generalisteId);
 
             if (patient == null) {
                 session.setAttribute("error", "Patient introuvable");
-                resp.sendRedirect(req.getContextPath() + "/infirmier/liste-patients");
+                resp.sendRedirect(req.getContextPath() + "/infirmier/dashboard-infirmier");
                 return;
             }
 
-            if (generaliste == null) {
+            if (generaliste == null || !"GENERALISTE".equals(generaliste.getRole())) {
                 session.setAttribute("error", "Médecin généraliste introuvable");
-                resp.sendRedirect(req.getContextPath() + "/infirmier/liste-patients");
+                resp.sendRedirect(req.getContextPath() + "/infirmier/dashboard-infirmier");
                 return;
             }
 
+            patient.setMedecinGeneralisteAffecte(generaliste);
+            patient.setEnAttente(false);
+            patientService.updatePatient(patient);
 
             Consultation consultation = new Consultation();
             consultation.setPatient(patient);
@@ -129,37 +128,27 @@ public class CreerConsultationInfirmierServlet extends HttpServlet {
 
             consultationService.save(consultation);
 
-            patient.setEnAttente(false);
-            patientService.updatePatient(patient);
+
 
             session.setAttribute("success",
-                    "Consultation créée avec succès pour " + patient.getNom() + " " + patient.getPrenom() +
-                            " avec Dr. " + generaliste.getUsername());
+                    "Patient " + patient.getNom() + " " + patient.getPrenom() +
+                            " affecté à Dr. " + generaliste.getNom() + " " + generaliste.getPrenom());
 
             resp.sendRedirect(req.getContextPath() + "/infirmier/dashboard-infirmier");
 
         } catch (NumberFormatException e) {
-            e.printStackTrace();
             session.setAttribute("error", "Format d'ID invalide");
-            resp.sendRedirect(req.getContextPath() + "/infirmier/liste-patients");
-
+            resp.sendRedirect(req.getContextPath() + "/infirmier/dashboard-infirmier");
         } catch (Exception e) {
             e.printStackTrace();
-            session.setAttribute("error", "Erreur lors de la création de la consultation : " + e.getMessage());
-            resp.sendRedirect(req.getContextPath() + "/infirmier/liste-patients");
+            session.setAttribute("error", "Erreur : " + e.getMessage());
+            resp.sendRedirect(req.getContextPath() + "/infirmier/dashboard-infirmier");
         }
     }
 
     @Override
     public void destroy() {
-        if (patientService != null) {
-            patientService.close();
-        }
-        if (userService != null) {
-            userService.close();
-        }
-        if (consultationService != null) {
-            consultationService.close();
-        }
+        if (patientService != null) patientService.close();
+        if (userService != null) userService.close();
     }
 }
