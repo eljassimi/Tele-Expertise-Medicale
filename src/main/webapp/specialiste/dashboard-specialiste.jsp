@@ -74,7 +74,6 @@
         </svg>
         <h1 class="ml-3 text-xl font-bold text-white">Espace Spécialiste</h1>
       </div>
-
       <div class="flex items-center space-x-4">
                 <span class="text-white">
                     <svg class="inline h-5 w-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -114,6 +113,38 @@
     </div>
     <c:remove var="error" scope="session"/>
   </c:if>
+
+  <!-- Gestion des créneaux -->
+  <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl shadow-lg p-6 mb-8 border-l-4 border-blue-500">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center">
+        <svg class="w-12 h-12 text-blue-600 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+        </svg>
+        <div>
+          <h3 class="text-lg font-bold text-gray-900">Gestion de vos créneaux</h3>
+          <p class="text-sm text-gray-600 mt-1">
+            Vous avez actuellement <span class="font-bold text-blue-600">${creneauxLibres}</span> créneaux disponibles
+          </p>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <form method="post" action="${pageContext.request.contextPath}/specialiste/generer-creneaux"
+              onsubmit="return confirm('Voulez-vous générer 42 nouveaux créneaux pour les 7 prochains jours ?');">
+          <button type="submit"
+                  class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 transition shadow-lg">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+            </svg>
+            Générer 7 jours de créneaux
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
 
   <!-- Profile Info -->
   <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
