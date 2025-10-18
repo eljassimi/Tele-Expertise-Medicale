@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.medical.teleexpertisemedical.entity.Consultation;
 import org.medical.teleexpertisemedical.entity.DemandeExpertise;
 import org.medical.teleexpertisemedical.entity.User;
 import org.medical.teleexpertisemedical.service.DemandeExpertiseService;
@@ -92,11 +93,12 @@ public class RepondreExpertiseServlet extends HttpServlet {
 
         try {
             Long demandeId = Long.parseLong(req.getParameter("demandeId"));
+            String modeReponse = req.getParameter("modeReponse");
             String avisMedical = req.getParameter("avisMedical");
             String recommandations = req.getParameter("recommandations");
 
             if (avisMedical == null || avisMedical.trim().isEmpty()) {
-                session.setAttribute("error", "L'avis medical est obligatoire");
+                session.setAttribute("error", "L'avis médical est obligatoire");
                 resp.sendRedirect(req.getContextPath() +
                         "/specialiste/repondre-expertise?demandeId=" + demandeId);
                 return;
@@ -114,11 +116,12 @@ public class RepondreExpertiseServlet extends HttpServlet {
             User specialiste = userService.findByUsername(username);
 
             if (!demande.getSpecialiste().getId().equals(specialiste.getId())) {
-                session.setAttribute("error", "Cette demande n est pas pour vous");
+                session.setAttribute("error", "Cette demande n'est pas pour vous");
                 resp.sendRedirect(req.getContextPath() + "/specialiste/dashboard-specialiste");
                 return;
             }
 
+            demande.setModeReponse(modeReponse);
             demande.setAvisMedical(avisMedical);
             demande.setRecommandations(recommandations);
             demande.setStatut("TERMINEE");
@@ -126,9 +129,12 @@ public class RepondreExpertiseServlet extends HttpServlet {
 
             demandeExpertiseService.update(demande);
 
-            session.setAttribute("success",
-                    "Avis médical envoye avec succes pour le patient #" +
-                            demande.getConsultation().getPatient().getId());
+            String message = "TELEPHONIQUE".equals(modeReponse) ?
+                    "Consultation téléphonique confirmée" :
+                    "Avis médical envoyé avec succès";
+
+            session.setAttribute("success", message + " pour le patient #" +
+                    demande.getConsultation().getPatient().getId());
 
             resp.sendRedirect(req.getContextPath() + "/specialiste/dashboard-specialiste");
 
@@ -137,7 +143,7 @@ public class RepondreExpertiseServlet extends HttpServlet {
             resp.sendRedirect(req.getContextPath() + "/specialiste/dashboard-specialiste");
         } catch (Exception e) {
             e.printStackTrace();
-            session.setAttribute("error", "Erreur lors de l'enregistrement : " + e.getMessage());
+            session.setAttribute("error", "Erreur : " + e.getMessage());
             resp.sendRedirect(req.getContextPath() + "/specialiste/dashboard-specialiste");
         }
     }
