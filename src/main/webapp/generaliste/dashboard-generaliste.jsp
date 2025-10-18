@@ -207,20 +207,31 @@
                                     ${consultation.motif}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-orange-100 text-orange-800">
-                                    En cours
+                                <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${consultation.statut != "TERMINEE" ? 'bg-orange-100 text-orange-800' : 'bg-green-100 text-green-800'}">
+                                    ${consultation.statut}
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <a href="${pageContext.request.contextPath}/generaliste/consultation?patientId=${consultation.patient.id}"
-                                   class="text-blue-600 hover:text-blue-900 inline-flex items-center">
-                                    <svg class="h-5 w-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                                    </svg>
-                                    Consulter
-                                </a>
+                                <c:choose>
+                                    <c:when test="${consultation.statut != 'TERMINEE'}">
+<%--                                        <a href="${pageContext.request.contextPath}/generaliste/consultation-type?patientId=${consultation.patient.id}" class="text-blue-600 hover:text-blue-900 inline-flex items-center">Consulter</a>--%>
+                                        <a href="${pageContext.request.contextPath}/generaliste/consultation?patientId=${consultation.patient.id}"
+                                           class="text-blue-600 hover:text-blue-900 inline-flex items-center">
+                                            <svg class="h-5 w-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                            </svg>
+                                            Consulter
+                                        </a>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <span class="text-gray-700 bg-gray-100 px-3 italic py-1 rounded-full ">
+                                            Terminé
+                                        </span>
+                                    </c:otherwise>
+                                </c:choose>
                             </td>
+
                         </tr>
                     </c:forEach>
                     <c:if test="${empty consultations}">

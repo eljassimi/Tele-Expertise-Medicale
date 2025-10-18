@@ -68,7 +68,6 @@
         <p class="text-gray-600">Rejoignez notre système médical</p>
     </div>
 
-    <!-- Error Message -->
     <c:if test="${not empty sessionScope.error}">
         <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
                 ${sessionScope.error}
@@ -79,7 +78,6 @@
     <form action="register" method="post" class="space-y-6">
         <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}"/>
 
-        <!-- Role Selection (First) -->
         <div>
             <label for="role" class="block text-sm font-semibold text-gray-700 mb-2">
                 Rôle professionnel <span class="text-red-500">*</span>
@@ -109,7 +107,6 @@
             </div>
         </div>
 
-        <!-- Common Fields -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <!-- Nom -->
             <div>
@@ -300,7 +297,6 @@
         }
     }
 
-    // Initialize on page load
     toggleSpecialisteFields();
 </script>
 

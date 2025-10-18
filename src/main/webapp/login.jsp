@@ -56,7 +56,6 @@
         <p class="text-gray-600">Accédez à votre compte</p>
     </div>
 
-    <!-- Message d'erreur -->
     <c:if test="${not empty error}">
         <div class="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg">
                 ${error}

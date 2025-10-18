@@ -22,8 +22,6 @@
     .input-field:focus { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15); }
     .step { opacity: 0.5; }
     .step.active { opacity: 1; }
-    .creneau-card { transition: all 0.2s; }
-    .creneau-card:hover:not(.disabled) { transform: translateY(-2px); }
     .specialiste-card { cursor: pointer; border: 2px solid transparent; transition: all 0.3s; }
     .specialiste-card:hover { border-color: #3b82f6; transform: translateY(-2px); }
     .specialiste-card.selected { border-color: #2563eb; background-color: #eff6ff; }
@@ -64,7 +62,7 @@
   <c:if test="${not empty sessionScope.error}">
     <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6 flex items-center">
       <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
       </svg>
         ${sessionScope.error}
     </div>
@@ -110,7 +108,7 @@
   <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
     <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center">
       <svg class="w-6 h-6 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
       </svg>
       Patient concerné
     </h2>
@@ -189,20 +187,20 @@
             <div class="flex items-center justify-between">
               <div class="flex items-center">
                 <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                                    <span class="text-blue-700 font-bold text-lg">
-                                        ${specialiste.prenom.substring(0,1)}${specialiste.nom.substring(0,1)}
-                                    </span>
+                  <span class="text-blue-700 font-bold text-lg">
+                      ${specialiste.prenom.substring(0,1)}${specialiste.nom.substring(0,1)}
+                  </span>
                 </div>
                 <div class="ml-4">
                   <p class="font-bold text-gray-900">Dr. ${specialiste.nom} ${specialiste.prenom}</p>
                   <p class="text-sm text-gray-600">${specialiste.specialite.nom}</p>
                   <c:if test="${specialiste.disponible}">
-                                        <span class="inline-flex items-center px-2 py-1 text-xs font-semibold text-green-700 bg-green-100 rounded-full mt-1">
-                                            <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                <circle cx="10" cy="10" r="5"/>
-                                            </svg>
-                                            Disponible
-                                        </span>
+                    <span class="inline-flex items-center px-2 py-1 text-xs font-semibold text-green-700 bg-green-100 rounded-full mt-1">
+                      <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                        <circle cx="10" cy="10" r="5"/>
+                      </svg>
+                      Disponible
+                    </span>
                   </c:if>
                 </div>
               </div>
@@ -226,66 +224,92 @@
     </div>
   </c:if>
 
-  <!-- Étape 3: Créneaux disponibles -->
+  <!-- Étape 3: Calendrier et créneaux -->
   <c:if test="${not empty creneaux}">
     <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
       <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
         <div class="flex items-center justify-center w-8 h-8 bg-blue-600 text-white rounded-full font-bold mr-3">3</div>
-        Créneaux disponibles - Dr. ${specialisteSelectionne.nom} ${specialisteSelectionne.prenom}
+        Sélectionnez une date et un créneau horaire
       </h2>
 
-      <p class="text-sm text-gray-600 mb-4">
+      <p class="text-sm text-gray-600 mb-6">
         <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
         </svg>
-        Durée de consultation : 30 minutes
+        Durée de consultation : 30 minutes - Dr. ${specialisteSelectionne.nom} ${specialisteSelectionne.prenom}
       </p>
 
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-3" id="creneauxContainer">
-        <c:forEach items="${creneaux}" var="creneau">
-          <label class="creneau-card block p-4 border-2 rounded-lg cursor-pointer ${creneau.disponible ? 'border-green-200 bg-green-50 hover:border-blue-500' : 'border-gray-200 bg-gray-100 opacity-50 cursor-not-allowed disabled'}">
-            <input type="radio" name="creneauSelected" value="${creneau.id}"
-              ${creneau.disponible ? '' : 'disabled'}
-                   class="hidden creneau-radio"/>
-            <div class="text-center">
-              <p class="font-bold text-gray-900">
-                <fmt:parseDate value="${creneau.dateHeure}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDate" type="both"/>
-                <fmt:formatDate value="${parsedDate}" pattern="dd/MM/yyyy"/>
-              </p>
-              <p class="text-2xl font-bold ${creneau.disponible ? 'text-blue-600' : 'text-gray-400'} my-2">
-                <fmt:formatDate value="${parsedDate}" pattern="HH:mm"/>
-              </p>
-              <c:choose>
-                <c:when test="${creneau.disponible}">
-                                    <span class="inline-flex items-center px-2 py-1 text-xs font-semibold text-green-700 bg-green-100 rounded-full">
-                                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                                        </svg>
-                                        Disponible
-                                    </span>
-                </c:when>
-                <c:otherwise>
-                                    <span class="inline-flex items-center px-2 py-1 text-xs font-semibold text-gray-600 bg-gray-200 rounded-full">
-                                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                                        </svg>
-                                        Réservé
-                                    </span>
-                </c:otherwise>
-              </c:choose>
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Calendrier -->
+        <div class="lg:col-span-2">
+          <div class="border-2 border-gray-200 rounded-xl p-4">
+            <div class="flex items-center justify-between mb-4">
+              <button type="button" id="prevMonth" class="p-2 hover:bg-gray-100 rounded-lg">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                </svg>
+              </button>
+              <h3 class="text-lg font-bold" id="currentMonth"></h3>
+              <button type="button" id="nextMonth" class="p-2 hover:bg-gray-100 rounded-lg">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+              </button>
             </div>
-          </label>
-        </c:forEach>
-      </div>
 
-      <c:if test="${empty creneaux}">
-        <div class="text-center py-8 text-gray-500">
-          <svg class="mx-auto h-12 w-12 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-          </svg>
-          <p>Aucun créneau disponible pour ce spécialiste</p>
+            <!-- Jours de la semaine -->
+            <div class="grid grid-cols-7 gap-2 mb-2">
+              <div class="text-center text-sm font-semibold text-gray-600 py-2">Lun</div>
+              <div class="text-center text-sm font-semibold text-gray-600 py-2">Mar</div>
+              <div class="text-center text-sm font-semibold text-gray-600 py-2">Mer</div>
+              <div class="text-center text-sm font-semibold text-gray-600 py-2">Jeu</div>
+              <div class="text-center text-sm font-semibold text-gray-600 py-2">Ven</div>
+              <div class="text-center text-sm font-semibold text-gray-600 py-2">Sam</div>
+              <div class="text-center text-sm font-semibold text-gray-600 py-2">Dim</div>
+            </div>
+
+            <!-- Grille des jours -->
+            <div class="grid grid-cols-7 gap-2" id="calendarDays"></div>
+          </div>
+
+          <!-- Légende -->
+          <div class="flex items-center gap-4 mt-4 text-sm">
+            <div class="flex items-center">
+              <div class="w-4 h-4 bg-blue-100 border-2 border-blue-500 rounded mr-2"></div>
+              <span class="text-gray-600">Disponible</span>
+            </div>
+            <div class="flex items-center">
+              <div class="w-4 h-4 bg-gray-100 rounded mr-2"></div>
+              <span class="text-gray-600">Indisponible</span>
+            </div>
+            <div class="flex items-center">
+              <div class="w-4 h-4 bg-blue-600 rounded mr-2"></div>
+              <span class="text-gray-600">Sélectionné</span>
+            </div>
+          </div>
         </div>
-      </c:if>
+
+        <!-- Créneaux horaires -->
+        <div class="lg:col-span-1">
+          <div class="border-2 border-gray-200 rounded-xl p-4 h-full">
+            <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center">
+              <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              <span id="selectedDateDisplay">Sélectionnez une date</span>
+            </h3>
+
+            <div id="timeSlotsContainer" class="space-y-2 max-h-96 overflow-y-auto">
+              <div class="text-center text-gray-400 py-8">
+                <svg class="w-12 h-12 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+                <p class="text-sm">Cliquez sur une date du calendrier</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Étape 4: Formulaire de demande -->
@@ -405,51 +429,233 @@
 </div>
 
 <script>
-  // Gérer la sélection des créneaux
-  document.querySelectorAll('.creneau-radio').forEach(radio => {
-    radio.addEventListener('change', function() {
-      // Retirer la sélection visuelle de tous les créneaux
-      document.querySelectorAll('.creneau-card').forEach(card => {
-        if (!card.classList.contains('disabled')) {
-          card.classList.remove('border-blue-500', 'bg-blue-50');
-          card.classList.add('border-green-200', 'bg-green-50');
-        }
+
+  var creneauxData = [
+    <c:forEach items="${creneaux}" var="creneau" varStatus="status">
+    {
+      id: ${creneau.id},
+      dateTime: "${creneau.dateHeure}",
+      disponible: ${creneau.disponible}
+    }${!status.last ? ',' : ''}
+    </c:forEach>
+  ];
+
+  var currentDate = new Date();
+  var selectedDate = null;
+  var selectedCreneauId = null;
+
+  function formatDate(date) {
+    var day = String(date.getDate()).padStart(2, '0');
+    var month = String(date.getMonth() + 1).padStart(2, '0');
+    var year = date.getFullYear();
+    return day + '/' + month + '/' + year;
+  }
+
+  function getMonthName(date) {
+    var months = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+      'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+    return months[date.getMonth()] + ' ' + date.getFullYear();
+  }
+
+  // Vérifier si une date a des créneaux disponibles
+  function hasAvailableSlots(date) {
+    var dateStr = date.toISOString().split('T')[0];
+    return creneauxData.some(function(c) {
+      return c.dateTime.startsWith(dateStr) && c.disponible;
+    });
+  }
+
+  // Obtenir les créneaux pour une date spécifique
+  function getSlotsForDate(date) {
+    var dateStr = date.toISOString().split('T')[0];
+    return creneauxData.filter(function(c) {
+      return c.dateTime.startsWith(dateStr);
+    });
+  }
+
+  function generateCalendar() {
+    var year = currentDate.getFullYear();
+    var month = currentDate.getMonth();
+
+    document.getElementById('currentMonth').textContent = getMonthName(currentDate);
+
+    var firstDay = new Date(year, month, 1);
+    var lastDay = new Date(year, month + 1, 0);
+    var daysInMonth = lastDay.getDate();
+
+    var firstDayOfWeek = firstDay.getDay() - 1;
+    if (firstDayOfWeek === -1) firstDayOfWeek = 6;
+
+    var calendarDays = document.getElementById('calendarDays');
+    calendarDays.innerHTML = '';
+
+    for (var i = 0; i < firstDayOfWeek; i++) {
+      var emptyCell = document.createElement('div');
+      emptyCell.className = 'p-2';
+      calendarDays.appendChild(emptyCell);
+    }
+
+    for (var day = 1; day <= daysInMonth; day++) {
+      var date = new Date(year, month, day);
+      var dayCell = document.createElement('div');
+
+      var isToday = date.toDateString() === new Date().toDateString();
+      var isPast = date < new Date().setHours(0, 0, 0, 0);
+      var hasSlots = hasAvailableSlots(date);
+      var isSelected = selectedDate && date.toDateString() === selectedDate.toDateString();
+
+      var classes = 'p-3 text-center rounded-lg cursor-pointer transition-all ';
+
+      if (isPast || !hasSlots) {
+        classes += 'bg-gray-100 text-gray-400 cursor-not-allowed';
+      } else if (isSelected) {
+        classes += 'bg-blue-600 text-white font-bold shadow-lg';
+      } else if (hasSlots) {
+        classes += 'bg-blue-50 border-2 border-blue-500 text-blue-700 font-semibold hover:bg-blue-100';
+      }
+
+      if (isToday && !isPast) {
+        classes += ' ring-2 ring-blue-400';
+      }
+
+      dayCell.className = classes;
+      dayCell.innerHTML = '<span class="text-lg">' + day + '</span>';
+
+      if (!isPast && hasSlots) {
+        dayCell.onclick = (function(d) {
+          return function() {
+            selectDate(d);
+          };
+        })(date);
+      }
+
+      calendarDays.appendChild(dayCell);
+    }
+  }
+
+  function selectDate(date) {
+    selectedDate = date;
+    generateCalendar();
+    displayTimeSlots(date);
+
+    document.getElementById('selectedDateDisplay').textContent = formatDate(date);
+  }
+
+  function displayTimeSlots(date) {
+    var slots = getSlotsForDate(date);
+    var container = document.getElementById('timeSlotsContainer');
+
+    if (slots.length === 0) {
+      container.innerHTML = '<div class="text-center text-gray-400 py-8">' +
+              '<svg class="w-12 h-12 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
+              '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>' +
+              '</svg>' +
+              '<p class="text-sm">Aucun créneau disponible</p>' +
+              '</div>';
+      return;
+    }
+
+    container.innerHTML = '';
+
+    slots.forEach(function(slot) {
+      var slotDiv = document.createElement('label');
+      var time = new Date(slot.dateTime).toLocaleTimeString('fr-FR', {
+        hour: '2-digit',
+        minute: '2-digit'
       });
 
-      // Ajouter la sélection visuelle au créneau sélectionné
-      if (this.checked) {
-        this.closest('.creneau-card').classList.remove('border-green-200', 'bg-green-50');
-        this.closest('.creneau-card').classList.add('border-blue-500', 'bg-blue-50');
+      var isSelected = selectedCreneauId === slot.id;
 
-        // Mettre à jour le champ caché
-        document.getElementById('creneauIdField').value = this.value;
+      var classes = 'block p-4 border-2 rounded-lg cursor-pointer transition-all ';
 
-        // Activer le bouton de soumission
-        document.getElementById('submitBtn').disabled = false;
+      if (!slot.disponible) {
+        classes += 'bg-gray-100 border-gray-200 opacity-50 cursor-not-allowed';
+      } else if (isSelected) {
+        classes += 'bg-blue-600 border-blue-600 text-white shadow-lg';
+      } else {
+        classes += 'bg-green-50 border-green-300 hover:border-blue-500 hover:bg-blue-50';
       }
+
+      slotDiv.className = classes;
+
+      var statusBadge = slot.disponible ?
+              '<span class="inline-flex items-center px-2 py-1 text-xs font-semibold ' +
+              (isSelected ? 'bg-white text-blue-600' : 'bg-green-100 text-green-700') +
+              ' rounded-full">' +
+              '<svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
+              '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>' +
+              '</svg>Disponible</span>' :
+              '<span class="inline-flex items-center px-2 py-1 text-xs font-semibold bg-gray-200 text-gray-600 rounded-full">' +
+              '<svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
+              '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>' +
+              '</svg>Réservé</span>';
+
+      slotDiv.innerHTML = '<input type="radio" name="creneauSelected" value="' + slot.id + '" class="hidden creneau-radio" ' +
+              (slot.disponible ? '' : 'disabled') + (isSelected ? ' checked' : '') + '>' +
+              '<div class="flex items-center justify-between">' +
+              '<div class="flex items-center">' +
+              '<svg class="w-5 h-5 mr-2 ' + (isSelected ? 'text-white' : 'text-blue-600') + '" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
+              '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>' +
+              '</svg>' +
+              '<span class="text-lg font-bold">' + time + '</span>' +
+              '</div>' +
+              statusBadge +
+              '</div>';
+
+      if (slot.disponible) {
+        slotDiv.onclick = (function(id) {
+          return function() {
+            selectCreneau(id);
+          };
+        })(slot.id);
+      }
+
+      container.appendChild(slotDiv);
     });
+  }
+
+  // Sélectionner un créneau
+  function selectCreneau(creneauId) {
+    selectedCreneauId = creneauId;
+    document.getElementById('creneauIdField').value = creneauId;
+    document.getElementById('submitBtn').disabled = false;
+    displayTimeSlots(selectedDate);
+  }
+
+  // Navigation mois précédent/suivant
+  document.getElementById('prevMonth').addEventListener('click', function() {
+    currentDate.setMonth(currentDate.getMonth() - 1);
+    generateCalendar();
   });
 
-  // Validation avant soumission
-  document.getElementById('expertiseForm')?.addEventListener('submit', function(e) {
-    const creneauId = document.getElementById('creneauIdField').value;
+  document.getElementById('nextMonth').addEventListener('click', function() {
+    currentDate.setMonth(currentDate.getMonth() + 1);
+    generateCalendar();
+  });
+
+  // Initialiser le calendrier
+  generateCalendar();
+
+  // Validation formulaire
+  document.getElementById('expertiseForm').addEventListener('submit', function(e) {
+    var creneauId = document.getElementById('creneauIdField').value;
     if (!creneauId) {
       e.preventDefault();
-      alert('⚠️ Veuillez sélectionner un créneau horaire');
+      alert('Veuillez sélectionner un créneau horaire');
       return false;
     }
 
-    const question = document.getElementById('question').value.trim();
+    var question = document.getElementById('question').value.trim();
     if (!question) {
       e.preventDefault();
-      alert('⚠️ Veuillez poser une question au spécialiste');
+      alert('Veuillez poser une question au spécialiste');
       return false;
     }
 
-    const priorite = document.querySelector('input[name="priorite"]:checked');
+    var priorite = document.querySelector('input[name="priorite"]:checked');
     if (!priorite) {
       e.preventDefault();
-      alert('⚠️ Veuillez sélectionner un niveau de priorité');
+      alert('Veuillez sélectionner un niveau de priorité');
       return false;
     }
 

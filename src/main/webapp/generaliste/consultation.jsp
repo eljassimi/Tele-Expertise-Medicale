@@ -334,8 +334,7 @@
         const traitement = document.getElementById('traitement').value.trim();
 
         if (!diagnostic || !traitement) {
-            alert('⚠️ Pour clôturer la consultation, le diagnostic et le traitement sont obligatoires.');
-            // Marquer visuellement les champs requis
+            alert('⚠Pour clôturer la consultation, le diagnostic et le traitement sont obligatoires.');
             document.getElementById('diagnosticRequired').style.display = 'inline';
             document.getElementById('traitementRequired').style.display = 'inline';
             document.getElementById('diagnostic').classList.add('border-red-500');
@@ -350,24 +349,21 @@
         }
     }
 
-    // Scénario B : Demander avis spécialiste
     function demanderAvis() {
         const motif = document.getElementById('motif').value.trim();
         const observations = document.getElementById('observations').value.trim();
 
         if (!motif || !observations) {
-            alert('⚠️ Le motif et les observations sont requis avant de demander un avis spécialiste.');
+            alert(' Le motif et les observations sont requis avant de demander un avis spécialiste.');
             return;
         }
 
-        if (confirm('Souhaitez-vous demander l\'avis d\'un spécialiste pour ce patient ?')) {
             document.getElementById('actionField').value = 'demander_avis';
             document.getElementById('consultationForm').action = '${pageContext.request.contextPath}/generaliste/consultation';
             document.getElementById('consultationForm').submit();
-        }
+
     }
 
-    // Retirer les marqueurs d'erreur quand l'utilisateur saisit
     document.getElementById('diagnostic').addEventListener('input', function() {
         this.classList.remove('border-red-500');
         document.getElementById('diagnosticRequired').style.display = 'none';

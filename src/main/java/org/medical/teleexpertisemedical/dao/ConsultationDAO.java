@@ -83,6 +83,7 @@ public class ConsultationDAO {
             Consultation consultation = em.createQuery(
                             "SELECT c FROM Consultation c " +
                                     "LEFT JOIN FETCH c.patient p " +
+                                    "LEFT JOIN FETCH c.medecinGeneraliste mg " +
                                     "LEFT JOIN FETCH p.signesVitaux " +
                                     "WHERE c.id = :id",
                             Consultation.class)

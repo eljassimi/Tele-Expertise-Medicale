@@ -134,7 +134,6 @@
                   id="numeroSecuriteSociale"
                   placeholder="Numéro de sécurité sociale"
                   class="input-field w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-teal-700"
-                  pattern="[0-9]{13,15}"
                   title="Le numéro de sécurité sociale doit contenir 13 à 15 chiffres"
                   required
           />
@@ -287,7 +286,6 @@
                     type="tel"
                     id="telephone"
                     name="telephone"
-                    pattern="[0-9]{10}"
                     class="input-field w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-teal-700"
                     placeholder="0612345678"
             />

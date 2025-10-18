@@ -46,6 +46,18 @@ public class DemandeExpertise {
     @Column(name = "date_reponse")
     private LocalDateTime dateReponse;
 
+    @Column(name = "mode_reponse")
+    private String modeReponse; // "ECRITE" ou "TELEPHONIQUE"
+
+    // Getters et Setters
+    public String getModeReponse() {
+        return modeReponse;
+    }
+
+    public void setModeReponse(String modeReponse) {
+        this.modeReponse = modeReponse;
+    }
+
     // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
