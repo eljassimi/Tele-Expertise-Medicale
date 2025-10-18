@@ -72,31 +72,22 @@ classDiagram
         - String prenom
         - String telephone
         - String email
-        - Double tarif
-        - Boolean disponible
-        + login()
-        + logout()
     }
 
     class Infirmier {
-        + accueillerPatient(Patient p)
-        + enregistrerSignesVitaux(Patient p)
-        + affecterPatientAuGeneraliste(Patient p, User generaliste)
+        + enregistrerPatient()
+        + affecterAuGeneraliste()
     }
 
     class MedecinGeneraliste {
         - Double tarifConsultation
-        + creerConsultation(Patient p, String type)
-        + consulterPatient(Patient p)
-        + demanderExpertise(Consultation c, Specialiste s)
-        + cloturerConsultation(Consultation c)
-        + voirReponsesExpertises()
+        + creerConsultation()
+        + demanderExpertise()
     }
 
     class MedecinSpecialiste {
         - Double tarifExpertise
-        + voirDemandesExpertise()
-        + repondreExpertise(DemandeExpertise d, String mode)
+        + repondreExpertise()
         + gererCreneaux()
     }
 
@@ -106,10 +97,7 @@ classDiagram
         - String prenom
         - LocalDate dateNaissance
         - String numeroSecuriteSociale
-        - String telephone
-        - String adresse
         - Boolean enAttente
-        - LocalDateTime dateEnregistrement
     }
 
     class SignesVitaux {
@@ -117,8 +105,6 @@ classDiagram
         - Double tensionArterielle
         - Integer frequenceCardiaque
         - Double temperature
-        - Integer frequenceRespiratoire
-        - Double poids
         - LocalDateTime dateEnregistrement
     }
 
@@ -128,74 +114,54 @@ classDiagram
         - String motif
         - String observations
         - String diagnostic
-        - String traitement
         - String typeConsultation
-        - Double coutConsultation
         - String statut
     }
 
     class Specialite {
         - Long id
         - String nom
-        - String description
     }
 
     class Creneau {
         - Long id
         - LocalDateTime dateHeure
         - Boolean disponible
-        - Integer dureeMinutes
     }
 
     class DemandeExpertise {
         - Long id
-        - LocalDateTime dateDemande
         - String question
-        - String donneesAnalyses
         - String priorite
         - String statut
         - String modeReponse
         - String avisMedical
-        - String recommandations
         - LocalDateTime dateReponse
     }
 
     class ActeTechnique {
         - Long id
         - String nom
-        - String description
         - Double cout
     }
 
     %% Héritage
-    User <|-- Infirmier : extends
-    User <|-- MedecinGeneraliste : extends
-    User <|-- MedecinSpecialiste : extends
+    User <|-- Infirmier
+    User <|-- MedecinGeneraliste
+    User <|-- MedecinSpecialiste
 
-    %% Relations Patient
-    Infirmier "1" --> "0..*" Patient : enregistre >
-    Patient "1" --> "0..*" SignesVitaux : possède >
-    Patient "1" --> "0..1" User : affecté_à >
-    Patient "1" --> "0..*" Consultation : concerné_par >
+    %% Relations principales
+    Infirmier --> Patient : enregistre
+    Patient --> SignesVitaux : possède
+    MedecinGeneraliste --> Consultation : effectue
+    Patient --> Consultation : concerné_par
+    Consultation --> ActeTechnique : comprend
+    Consultation --> DemandeExpertise : génère
+    DemandeExpertise --> MedecinSpecialiste : assignée_à
+    DemandeExpertise --> Creneau : planifiée_sur
+    MedecinSpecialiste --> Specialite : a_pour_spécialité
+    MedecinSpecialiste --> Creneau : gère
 
-    %% Relations Consultation
-    MedecinGeneraliste "1" --> "0..*" Consultation : effectue >
-    Consultation "1" --> "0..*" ActeTechnique : comprend >
-    Consultation "0..1" --> "0..*" DemandeExpertise : peut_demander >
-
-    %% Relations Expertise
-    DemandeExpertise "1" --> "1" MedecinSpecialiste : assignée_à >
-    DemandeExpertise "0..1" --> "0..1" Creneau : réservé_pour >
-
-    %% Relations Spécialiste
-    MedecinSpecialiste "1" --> "1" Specialite : a_pour_spécialité >
-    MedecinSpecialiste "1" --> "0..*" Creneau : gère >
-    MedecinSpecialiste "1" --> "0..*" DemandeExpertise : répond_à >
-
-    %% Annotations
-    note for User "Table: users\nRôles: INFIRMIER, GENERALISTE, SPECIALISTE"
-    note for Consultation "Types: ECRITE, TELEPHONIQUE"
-    note for DemandeExpertise "Statuts: EN_ATTENTE, TERMINEE\nPriorités: URGENTE, NORMALE, NON_URGENTE\nModes: ECRITE, TELEPHONIQUE"
 
 ````
 ---
